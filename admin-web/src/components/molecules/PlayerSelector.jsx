@@ -2,7 +2,7 @@
 import React from 'react';
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import Select from '../../../node_modules/react-select/dist';
+import Select from 'react-select';
 
 const GET_GLOBAL_PLAYERS = gql`
   query GetGlobalPlayers {

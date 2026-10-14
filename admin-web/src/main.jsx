@@ -9,7 +9,7 @@ import { ApolloProvider } from '@apollo/client/react';
 
 const client = new ApolloClient({
   link: new HttpLink({
-    uri: 'http://localhost:5005/cricket-global-league/us-central1/api',
+    uri: 'https://us-central1-cricket-global-league.cloudfunctions.net/api',
   }),
   cache: new InMemoryCache(),
 });

@@ -24,8 +24,10 @@ function App() {
         <aside className="w-full md:w-64 bg-slate-900 border-r border-slate-800/60 p-5 flex flex-col justify-between shrink-0">
           <div className="space-y-8">
             {/* Logo Header */}
-            <div className="flex items-center gap-3 px-2">
-              <Logo className="w-10 h-10" />
+            <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 px-2 text-center sm:text-left">
+              <div className="w-24 h-24 sm:w-32 sm:h-32">
+              <Logo/>
+              </div>
               <div>
                 <span className="text-base font-black tracking-tight text-white uppercase block leading-none">PSPL NETWORK</span>
                 <span className="text-[10px] text-emerald-400 font-bold tracking-widest uppercase">Palnadu League</span>
@@ -34,8 +36,8 @@ function App() {
             
             {/* Sidebar Routes Links */}
             <nav className="flex flex-col gap-2">
-              <NavLink to="/" className={sideLinkClass}>🏠 Home Portal</NavLink>
-              <NavLink to="/leagues" className={sideLinkClass}>🏆 Leagues Info</NavLink>
+              <NavLink to="/" className={sideLinkClass}>🏠 Home </NavLink>
+              <NavLink to="/leagues" className={sideLinkClass}>🏆 Leagues </NavLink>
               <div className="h-px bg-slate-800/60 my-2"></div>
               <span className="text-[10px] text-slate-500 font-bold px-4 uppercase tracking-wider">Console Center</span>
               <NavLink to="/register-player" className={sideLinkClass}>🏃 Player Register</NavLink>

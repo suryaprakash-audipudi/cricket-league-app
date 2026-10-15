@@ -6,9 +6,9 @@ export const Home = () => {
       
       {/* 📺 Top Home Banner Sponsor Ad Slot */}
       <div className="w-full bg-slate-900 border border-slate-800 p-2 rounded-2xl text-center shadow-lg">
-        <span className="text-[9px] text-slate-500 font-bold block mb-1 uppercase tracking-widest">GDCL / PSPL Official Premium Sponsor</span>
-        <div className="h-32 bg-gradient-to-r from-slate-800 to-slate-800/40 rounded-xl flex items-center justify-center border border-slate-700/50 text-slate-400 font-black text-xl italic tracking-wider">
-         <img src="/pspl-main-banner.png"/>
+        <span className="text-[9px] text-slate-500 font-bold block mb-1 uppercase tracking-widest">PSPL Official Premium Sponsor</span>
+        <div className="bg-gradient-to-r from-slate-800 to-slate-800/40 rounded-xl flex items-center justify-center border border-slate-700/50 text-slate-400 font-black text-xl italic tracking-wider">
+         <img src="/title_sponser_banner_final.png" className="w-full"/>
         </div>
       </div>
 
@@ -62,7 +62,8 @@ export const Home = () => {
           <div className="bg-slate-900 border border-slate-800 p-3 rounded-2xl text-center h-48 flex flex-col justify-center items-center">
             <span className="text-[9px] text-slate-600 font-bold block mb-2 uppercase">Vertical Side Ad</span>
             <div className="w-full flex-1 bg-slate-800/50 rounded-xl flex items-center justify-center border border-slate-700/40 text-slate-500 text-xs font-black italic">
-              SIDE BANNER ADS
+              {/*<span>SIDE BANNER ADS</span> */}
+              <iframe width="100%" height="auto" src="https://www.youtube.com/embed/8NsMrErZZPA?list=RD8NsMrErZZPA&autoplay=1" title="TDP Latest Songs 2019 || Chandrababu Naidu | NarasaraoPet | Chadalavada Aravind Babu" frameborder="0" allow="accelerometer; controls; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>
           </div>
         </div>

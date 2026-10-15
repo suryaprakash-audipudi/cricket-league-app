@@ -63,7 +63,7 @@ export const Home = () => {
             <span className="text-[9px] text-slate-600 font-bold block mb-2 uppercase">Vertical Side Ad</span>
             <div className="w-full flex-1 bg-slate-800/50 rounded-xl flex items-center justify-center border border-slate-700/40 text-slate-500 text-xs font-black italic">
               {/*<span>SIDE BANNER ADS</span> */}
-              <iframe width="100%" height="auto" src="https://www.youtube.com/embed/8NsMrErZZPA?list=RD8NsMrErZZPA&autoplay=1" title="TDP Latest Songs 2019 || Chandrababu Naidu | NarasaraoPet | Chadalavada Aravind Babu" frameborder="0" allow="accelerometer; controls; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+              <iframe width="100%" height="auto" src="https://www.youtube.com/embed/8NsMrErZZPA?list=RD8NsMrErZZPA&autoplay=1" title="TDP Latest Songs 2019 || Chandrababu Naidu | NarasaraoPet | Chadalavada Aravind Babu" frameborder="0" allow="accelerometer; controls; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>
           </div>
         </div>

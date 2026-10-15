@@ -1,12 +1,12 @@
 // src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, Navigate } from 'react-router-dom';
-import { Logo } from './components/atoms/Logo'; // SVG లోగో ఇంపోర్ట్
 import { Home } from './pages/Home';
 import { Leagues } from './pages/Leagues';
 import { PlayerForm } from './components/organisms/PlayerForm';
 import { TeamForm } from './components/organisms/TeamsForm';
 import { SponsorForm } from './components/organisms/SponsorForm';
+import Sidebar from './components/molecules/Sidebar';
 
 function App() {
   const sideLinkClass = ({ isActive }) => 
@@ -21,36 +21,7 @@ function App() {
       <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row font-sans">
         
         {/* 🔲 1. Modern Left Side Navigation Sidebar */}
-        <aside className="w-full md:w-64 bg-slate-900 border-r border-slate-800/60 p-5 flex flex-col justify-between shrink-0">
-          <div className="space-y-8">
-            {/* Logo Header */}
-            <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 px-2 text-center sm:text-left">
-              <div className="w-24 h-24 sm:w-32 sm:h-32">
-              <Logo/>
-              </div>
-              <div>
-                <span className="text-base font-black tracking-tight text-white uppercase block leading-none">PSPL NETWORK</span>
-                <span className="text-[10px] text-emerald-400 font-bold tracking-widest uppercase">Palnadu League</span>
-              </div>
-            </div>
-            
-            {/* Sidebar Routes Links */}
-            <nav className="flex flex-col gap-2">
-              <NavLink to="/" className={sideLinkClass}>🏠 Home </NavLink>
-              <NavLink to="/leagues" className={sideLinkClass}>🏆 Leagues </NavLink>
-              <div className="h-px bg-slate-800/60 my-2"></div>
-              <span className="text-[10px] text-slate-500 font-bold px-4 uppercase tracking-wider">Console Center</span>
-              <NavLink to="/register-player" className={sideLinkClass}>🏃 Player Register</NavLink>
-              <NavLink to="/register-team" className={sideLinkClass}>🛡️ Team Register</NavLink>
-              <NavLink to="/admin-ads" className={sideLinkClass}>📢 Ads Center</NavLink>
-            </nav>
-          </div>
-
-          {/* Footer inside sidebar */}
-          <div className="text-[10px] text-slate-600 px-2 mt-6">
-            © 2026 PSPL Platform. v4 Serverless.
-          </div>
-        </aside>
+        <Sidebar sideLinkClass={sideLinkClass}/>
 
         {/* 📺 2. Right Canvas: Main Content Scrollable View */}
         <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 w-full mx-auto">

@@ -94,10 +94,13 @@ export default function Sidebar({ sideLinkClass }) {
             </span>
             
             <NavLink to="/register-player" onClick={closeMenu} className={sideLinkClass}>
-              🏃 Player Register
+              🏃 Player Registration
             </NavLink>
             <NavLink to="/register-team" onClick={closeMenu} className={sideLinkClass}>
-              🛡️ Team Register
+              🛡️ Team Registration
+            </NavLink>
+            <NavLink to="/live-stream" onClick={closeMenu} className={sideLinkClass}>
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span><span>Live Stream Link</span>
             </NavLink>
             <NavLink to="/admin-ads" onClick={closeMenu} className={sideLinkClass}>
               📢 Ads Center

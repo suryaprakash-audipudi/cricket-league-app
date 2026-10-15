@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { Leagues } from './pages/Leagues';
+import { LiveStream } from './components/organisms/LiveStream';
 import { PlayerForm } from './components/organisms/PlayerForm';
 import { TeamForm } from './components/organisms/TeamsForm';
 import { SponsorForm } from './components/organisms/SponsorForm';
@@ -28,6 +29,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/leagues" element={<Leagues />} />
+            <Route path="/live-stream" element={<LiveStream />} />
             <Route path="/register-player" element={<PlayerForm />} />
             <Route path="/register-team" element={<TeamForm />} />
             <Route path="/admin-ads" element={<SponsorForm />} />

@@ -62,17 +62,38 @@ export const Leagues = () => {
         ))}
       </div>
 
-      {/* 📊 ప్రధాన గ్రిడ్ కంటైనర్ - పెద్ద స్క్రీన్స్‌లో 3 భాగాలుగా విడిపోతుంది */}
-<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+
+{/* 📊 ప్రధాన గ్రిడ్ కంటైనర్ - ఐటమ్స్ సర్దుబాటు కోసం flex-col మరియు lg:grid ని కలిపి వాడుతున్నాం */}
+<div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 items-start">
   
-  {/* 🛡️ ఎడమవైపు భాగం: రిజిస్టర్డ్ జట్ల గ్రిడ్ (2 కాలమ్స్ స్పేస్ ఆక్యుపై చేస్తుంది) */}
-  <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+  {/* 📢 1. స్పాన్సర్ యాడ్స్ ప్యానెల్ (మొబైల్‌లో ఇది మొదట వస్తుంది, పెద్ద స్క్రీన్స్‌లో 3వ కాలమ్ కి వెళ్తుంది) */}
+  <div className="w-full order-first lg:order-last lg:col-span-1 space-y-4">
+    <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl text-center shadow-xl">
+      <span className="text-[10px] text-slate-500 font-bold block mb-2 uppercase tracking-widest">
+        Constituency Sponsor
+      </span>
+      
+      {/* 💎 వర్టికల్ బ్యానర్ స్లాట్ (మొబైల్ లో నీట్‌గా ఫిట్ అవ్వడానికి w-full ఇచ్చాం) */}
+      <div className="h-48 lg:h-64 bg-gradient-to-r lg:bg-gradient-to-b from-slate-800 to-slate-900 rounded-lg flex flex-col items-center justify-center border border-slate-700/50 p-4 gap-2">
+        <span className="text-2xl animate-bounce">📢</span>
+        <span className="text-xs font-black tracking-wider text-slate-400 italic">
+          PSPL OFFICAL PREMIUM SPONSOR AD
+        </span>
+        <p className="text-[10px] text-slate-500 max-w-[200px] mx-auto hidden sm:block lg:block">
+          Contact PSPL Admin to place your business banner here.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {/* 🛡️ 2. రిజిస్టర్డ్ జట్ల గ్రిడ్ (మొబైల్‌లో యాడ్ కింద వస్తుంది, పెద్ద స్క్రీన్స్‌లో 2 కాలమ్స్ స్పేస్ తీసుకుంటుంది) */}
+  <div className="w-full lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
     {teamsInConstituency?.map((team) => (
       <div 
         key={team.id} 
         className="bg-slate-900 border border-slate-800 p-5 rounded-xl flex items-center gap-4 hover:border-emerald-500/40 transition group cursor-pointer shadow-lg"
       >
-        {/* టీమ్ లోగో (మనం ఇప్పుడే బిల్డ్ చేసిన క్లీన్ వెబ్‌పీ ఇమేజ్ యుఆర్ఎల్ ఇక్కడ లోడ్ అవుతుంది) */}
+        {/* టీమ్ లోగో */}
         <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center text-2xl group-hover:scale-110 transition duration-150 overflow-hidden">
           {team.logoUrl ? (
             <img src={team.logoUrl} alt={team.teamName} className="w-full h-full object-cover" />
@@ -86,39 +107,15 @@ export const Leagues = () => {
             {team.teamName}
           </h4>
           <p className="text-xs text-slate-400 mt-0.5">
-            Franchise Owner: {team.owner || 'Premium Franchise'}
+            Franchise Owner: {team.ownerId || 'Premium Franchise'}
           </p>
         </div>
       </div>
     ))}
   </div>
 
-  {/* 📢 కుడివైపు భాగం: వర్టికల్ స్పాన్సర్ యాడ్స్ ప్యానెల్ (1 కాలమ్ స్పేస్ ఆక్యుపై చేస్తుంది) */}
-  <div className="space-y-4 sticky top-24">
-    <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl text-center shadow-xl">
-      <span className="text-[10px] text-slate-500 font-bold block mb-2 uppercase tracking-widest">
-        Constituency Sponsor
-      </span>
-      
-      {/* 💎 వర్టికల్ బ్యానర్ స్లాట్ (దీని ఎత్తును h-64 లేదా h-72 గా కస్టమైజ్ చేసుకోవచ్చు) */}
-      <div className="h-64 bg-gradient-to-b from-slate-800 to-slate-900 rounded-lg flex flex-col items-center justify-center border border-slate-700/50 p-4 gap-2">
-        <span className="text-2xl">📢</span>
-        <span className="text-xs font-black tracking-wider text-slate-400 italic">
-          LOCAL BRAND PLACEHOLDER
-        </span>
-        <p className="text-[10px] text-slate-500 max-w-[150px] mx-auto">
-          Contact PSPL Admin to place your business banner here.
-        </p>
-      </div>
-    </div>
-
-    {/* 🤝 ఒకే చోట కాకుండా కింద మరొక చిన్న యాడ్ స్లాట్ (Optional Bonus Slot) */}
-    <div className="bg-slate-900 border border-slate-800 p-3 rounded-xl text-center text-[10px] text-slate-500 font-bold uppercase border-dashed">
-      ⚡ Co-Sponsor Mini Banner Slot
-    </div>
-  </div>
-
 </div>
+
 
     </div>
   );

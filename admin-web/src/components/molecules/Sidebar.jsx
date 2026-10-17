@@ -99,6 +99,8 @@ export default function Sidebar({ sideLinkClass }) {
             <NavLink to="/register-team" onClick={closeMenu} className={sideLinkClass}>
               🛡️ Team Registration
             </NavLink>
+            <NavLink to="/admin-review" onClick={closeMenu} className={sideLinkClass}>🛡️ Review Registrations</NavLink>
+
             <NavLink to="/live-stream" onClick={closeMenu} className={sideLinkClass}>
                 <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span><span>Live Stream Link</span>
             </NavLink>
@@ -109,9 +111,16 @@ export default function Sidebar({ sideLinkClass }) {
         </div>
 
         {/* Footer inside sidebar */}
-        <div className="text-[10px] text-slate-600 px-2 mt-6">
-          © 2026 PSPL Platform. v4 Serverless.
-        </div>
+        <footer className="w-full text-center py-6 text-xs text-slate-500 border-t border-slate-900 bg-slate-900/40 space-y-2 mt-auto">
+            <div>
+              © {new Date().getFullYear()} <b>Palnadu Street Premier League (PSPL)</b> Network. All rights reserved.
+            </div>
+            <div className="flex justify-center gap-4 text-[11px] font-medium">
+              <NavLink to="/privacy-policy" className="text-slate-400 hover:text-emerald-400 transition underline decoration-slate-700 underline-offset-4">
+                🔒 Privacy Policy & Legal Consent Terms
+              </NavLink>
+            </div>
+          </footer>
       </aside>
     </>
   );

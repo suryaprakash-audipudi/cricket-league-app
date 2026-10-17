@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
+import { getAuth } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -20,3 +21,4 @@ const app = initializeApp(firebaseConfig);
 
 // ☁️ గూగుల్ క్లౌడ్ స్టోరేజ్ సర్వీస్ ని ఎక్స్‌పోర్ట్ చేస్తున్నాం (ఫారమ్ లలో వాడుకోవడానికి)
 export const storage = getStorage(app);
+export const auth = getAuth(app);

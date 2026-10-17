@@ -32,6 +32,9 @@ const typeDefs = gql`
     skill: String!         
     geoScope: GeoScope!
     profilePic: String!
+    idHash: String!
+    idCardDocUrl: String   # 🚀 ఆధార్ కార్డ్ PDF/JPG డాక్యుమెంట్ లింక్ యాడ్ చేసాం
+    status: String!
   }
 
   type Team {
@@ -57,7 +60,10 @@ const typeDefs = gql`
 
   type Query {
     getAdsByScope(level: String!, country: String!, state: String, district: String, placement: String): [SponsorAd],
-    getGlobalPlayers: [User]
+    getGlobalPlayers: [User],
+    
+    # 🚀 3. అడ్మిన్ డాష్‌బోర్డ్ కోసం కేవలం PENDING లో ఉన్న ప్లేయర్స్ ని మాత్రమే తెచ్చే క్వెరీ
+    getPendingPlayers: [User]
   }
 
   type Mutation {
@@ -72,12 +78,15 @@ const typeDefs = gql`
     ): SponsorAd
 
     registerGlobalPlayer(
-      name: String!
-      phone: String!
-      skill: String!
-      geoScope: GeoScopeInput!
-      profilePic: String!
+        name: String!
+        phone: String!
+        skill: String!
+        geoScope: GeoScopeInput!
+        profilePic: String!
+        idHash: String!
+        idCardDocUrl: String! # 🚀 ముటేషన్ ఇన్‌పుట్‌లో యాడ్ చేసాం
     ): User
+
 
     createGlobalTeam(
         teamName: String!
@@ -87,6 +96,8 @@ const typeDefs = gql`
         geoScope: GeoScopeInput!
     ): Team
 
+    # 🚀 5. అడ్మిన్ పెండింగ్ ప్లేయర్ ని APPROVED లేదా REJECTED గా మార్చడానికి ముటేషన్
+    updatePlayerStatus(playerId: ID!, status: String!): String!
   }
 `;
 
@@ -107,20 +118,32 @@ const resolvers = {
     }, 
     getGlobalPlayers: async () => {
       try {
-        // Firestore 'users' లో 'role == PLAYER' ఉన్న వాళ్ళని ఫెచ్ చేస్తుంది
-        const snapshot = await db.collection("users").where("role", "==", "PLAYER").get();
+        // 💎 ఆక్షన్ పూల్ లేదా పబ్లిక్ లిస్ట్ లో కేవలం APPROVED అయిన ప్లేయర్స్ మాత్రమే కనిపిస్తారు (Data Security)
+        const snapshot = await db.collection("users")
+          .where("role", "==", "PLAYER")
+          .where("status", "==", "APPROVED")
+          .get();
         
-        // డేటాను ఐడిలతో సహా మ్యాప్ చేసి రిటర్న్ చేస్తుంది
-        return snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       } catch (error) {
         console.error("Error inside getGlobalPlayers:", error);
         throw new Error("Backend failed to retrieve talent pool");
       }
+    },
+    getPendingPlayers: async () => {
+      try {
+        // అడ్మిన్ వెరిఫికేషన్ కోసం కేవలం PENDING లో ఉన్న రికార్డులను మాత్రమే లాగుతుంది
+        const snapshot = await db.collection("users")
+          .where("role", "==", "PLAYER")
+          .where("status", "==", "PENDING")
+          .get();
+        
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      } catch (error) {
+        console.error("Error inside getPendingPlayers:", error);
+        throw new Error("Backend failed to retrieve pending applications");
+      }
     }
-
   },
 
   Mutation: {
@@ -134,69 +157,87 @@ const resolvers = {
       }
     },
 
-    registerGlobalPlayer: async (_, { name, phone, skill, geoScope }) => {
-      try {
-        const newPlayerData = { name, phone, skill, role: "PLAYER", geoScope, profilePic, createdAt: new Date().toISOString() };
+    registerGlobalPlayer: async (_, { name, phone, skill, geoScope, profilePic, idHash, idCardDocUrl }) => {
+     try {
+        const idDuplicateSnapshot = await db.collection("users").where("idHash", "==", idHash).get();
+        if (!idDuplicateSnapshot.empty) {
+        throw new Error("DUPLICATE_ENTRY: This identity credential number is already registered!");
+        }
+
+        const phoneDuplicateSnapshot = await db.collection("users").where("phone", "==", phone).get();
+        if (!phoneDuplicateSnapshot.empty) {
+        throw new Error("DUPLICATE_ENTRY: This mobile registry vector already exists!");
+        }
+
+        const newPlayerData = { 
+        name, 
+        phone, 
+        skill, 
+        role: "PLAYER", 
+        geoScope, 
+        profilePic, 
+        idHash, 
+        idCardDocUrl, // 🚀 ఫైర్‌స్టోర్ డేటాబేస్ లోకి డాక్యుమెంట్ లింక్ వెళ్తుంది
+        status: "PENDING", 
+        createdAt: new Date().toISOString() 
+        };
+        
         const docRef = await db.collection("users").add(newPlayerData);
         return { id: docRef.id, ...newPlayerData };
-      } catch (error) {
-        console.error("Player Registration Error:", error);
-        throw new Error("Failed to register player");
-      }
+    } catch (error) {
+        throw new Error(error.message);
+    }
     },
 
     createGlobalTeam: async (_, { teamName, logoUrl, ownerId, playerIds, geoScope }) => {
       try {
-        const newTeamData = {
-          teamName,
-          logoUrl,
-          ownerId,
-          playerIds, // ఫ్రంటెండ్ ఆటో-కంప్లీట్ చిప్స్ నుండి వచ్చిన ఐడిల అరే
-          geoScope,
-          createdAt: new Date().toISOString()
-        };
-
-        // Firestore లోని 'teams' కలెక్షన్ లోకి డేటా ఇన్సర్ట్ అవుతుంది
-        // ఇది మనం రాసిన firestore.rules కి లోబడి సేవ్ అవుతుంది
+        const newTeamData = { teamName, logoUrl, ownerId, playerIds, geoScope, createdAt: new Date().toISOString() };
         const docRef = await db.collection("teams").add(newTeamData);
-        
-        // డేటాబేస్ క్రియేట్ చేసిన ఐడి తో సహా తిరిగి రిటర్న్ చేస్తున్నాం
-        return {
-          id: docRef.id,
-          ...newTeamData
-        };
+        return { id: docRef.id, ...newTeamData };
       } catch (error) {
         console.error("Error in createGlobalTeam Resolver:", error);
         throw new Error("Failed to create global team document inside Firestore.");
+      }
+    },
+
+    updatePlayerStatus: async (_, { playerId, status }) => {
+      try {
+        // అడ్మిన్ క్లిక్ చేసిన కమాండ్ ని బట్టి Firestore లో 'status' ఫీల్డ్ అప్‌డేట్ అవుతుంది
+        await db.collection("users").doc(playerId).update({ 
+          status: status,
+          authorizedAt: new Date().toISOString()
+        });
+        return `SUCCESS: Target node state transitioned to "${status}" metrics.`;
+      } catch (error) {
+        console.error("Error in updatePlayerStatus:", error);
+        throw new Error("Failed to transition target node authorization matrix.");
       }
     }
   }
 };
 
-// 3. Apollo Server ఇనిషియలైజేషన్ (CORS ని ఇక్కడ నిలిపివేసి మనం కింద మాన్యువల్ గా ఇస్తాం)
+// 3. Apollo Server Initialization
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   playground: true,
   introspection: true,
-  cors: false // ఆటోమేటిక్ అపోలో CORS ని ఆపేసాం
+  cors: false
 });
 
 const handler = server.createHandler();
 
-// 🚀 బ్రౌజర్ ఎర్రర్స్ రాకుండా గట్టిగా పట్టుకునే క్లీన్ CORS మిడిల్‌వేర్ హ్యాండ్లర్
+// 🚀 Safe Production CORS Access Layer Middleware
 exports.api = functions.https.onRequest((req, res) => {
-  // అన్ని ఒరిజిన్స్ మరియు మెథడ్స్ కి పక్కాగా హెడర్స్ ఇస్తున్నాం
   res.set("Access-Control-Allow-Origin", "*");
   res.set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS, POST, PUT");
-  res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, apollo-require-preflight");
+  res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, apollo-require-preflight, x-apollo-operation-name");
+  res.set("Access-Control-Allow-Credentials", "true");
 
-  // బ్రౌజర్ పంపే టెస్ట్ సిగ్నల్ (OPTIONS / Pre-flight) ని ఇక్కడే సక్సెస్ ఫుల్ గా రిటర్న్ చేస్తున్నాం
   if (req.method === "OPTIONS") {
     res.status(204).send("");
     return;
   }
 
-  // ఒరిజినల్ రిక్వెస్ట్ ని అపోలో సర్వర్ కి పంపుతున్నాం
   return handler(req, res);
 });

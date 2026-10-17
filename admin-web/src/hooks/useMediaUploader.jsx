@@ -15,7 +15,7 @@ const convertToCdnUrl = (firebaseUrl, folderName, uniqueFileName) => {
   
   // 🚀 గూగుల్ ఇచ్చిన గజిబిజి యుఆర్ఎల్ ని పూర్తిగా పక్కన పెట్టేసి, 
   // నేరుగా మన క్లౌడ్‌ఫ్లేర్ ప్రాక్సీ కింద క్లీన్ స్ట్రక్చర్ ని బిల్డ్ చేస్తున్నాం!
-  return `https://psplcricket.in${folderName}/${uniqueFileName}`;
+  return `https://psplcricket.in/${folderName}/${uniqueFileName}`;
 };
 
 

@@ -31,6 +31,7 @@ const typeDefs = gql`
     role: String!          
     skill: String!         
     geoScope: GeoScope!
+    profilePic: String!
   }
 
   type Team {
@@ -75,6 +76,7 @@ const typeDefs = gql`
       phone: String!
       skill: String!
       geoScope: GeoScopeInput!
+      profilePic: String!
     ): User
 
     createGlobalTeam(
@@ -134,7 +136,7 @@ const resolvers = {
 
     registerGlobalPlayer: async (_, { name, phone, skill, geoScope }) => {
       try {
-        const newPlayerData = { name, phone, skill, role: "PLAYER", geoScope, createdAt: new Date().toISOString() };
+        const newPlayerData = { name, phone, skill, role: "PLAYER", geoScope, profilePic, createdAt: new Date().toISOString() };
         const docRef = await db.collection("users").add(newPlayerData);
         return { id: docRef.id, ...newPlayerData };
       } catch (error) {

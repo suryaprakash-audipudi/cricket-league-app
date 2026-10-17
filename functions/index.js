@@ -63,7 +63,9 @@ const typeDefs = gql`
     getGlobalPlayers: [User],
     
     # 🚀 3. అడ్మిన్ డాష్‌బోర్డ్ కోసం కేవలం PENDING లో ఉన్న ప్లేయర్స్ ని మాత్రమే తెచ్చే క్వెరీ
-    getPendingPlayers: [User]
+    getPendingPlayers: [User],
+
+    checkUsernameAvailability(username: String!): Boolean!
   }
 
   type Mutation {
@@ -143,6 +145,21 @@ const resolvers = {
         console.error("Error inside getPendingPlayers:", error);
         throw new Error("Backend failed to retrieve pending applications");
       }
+    },
+    checkUsernameAvailability: async (_, { username }) => {
+        try {
+            const cleanUsername = username.trim().toLowerCase();
+            
+            // 🔒 ఫైర్‌స్టోర్ లో నేరుగా ఆ డాక్యుమెంట్ ఐడీ ఉందో లేదో చెక్ చేస్తుంది (0.001s వేగం)
+            const docRef = db.collection("users").doc(cleanUsername);
+            const docSnapshot = await docRef.get();
+            
+            // డాక్యుమెంట్ లేకపోతే అది అవైలబుల్ లో ఉన్నట్లు (Returns true)
+            return !docSnapshot.exists;
+        } catch (error) {
+            console.error("Username Availability Check Error:", error);
+            throw new Error("Failed to check username index registry.");
+        }
     }
   },
 
@@ -157,37 +174,56 @@ const resolvers = {
       }
     },
 
-    registerGlobalPlayer: async (_, { name, phone, skill, geoScope, profilePic, idHash, idCardDocUrl }) => {
-     try {
-        const idDuplicateSnapshot = await db.collection("users").where("idHash", "==", idHash).get();
-        if (!idDuplicateSnapshot.empty) {
-        throw new Error("DUPLICATE_ENTRY: This identity credential number is already registered!");
-        }
-
-        const phoneDuplicateSnapshot = await db.collection("users").where("phone", "==", phone).get();
-        if (!phoneDuplicateSnapshot.empty) {
-        throw new Error("DUPLICATE_ENTRY: This mobile registry vector already exists!");
-        }
-
-        const newPlayerData = { 
-        name, 
-        phone, 
-        skill, 
-        role: "PLAYER", 
-        geoScope, 
-        profilePic, 
-        idHash, 
-        idCardDocUrl, // 🚀 ఫైర్‌స్టోర్ డేటాబేస్ లోకి డాక్యుమెంట్ లింక్ వెళ్తుంది
-        status: "PENDING", 
-        createdAt: new Date().toISOString() 
-        };
-        
-        const docRef = await db.collection("users").add(newPlayerData);
-        return { id: docRef.id, ...newPlayerData };
-    } catch (error) {
-        throw new Error(error.message);
+    registerGlobalPlayer: async (_, { username, name, phone, skill, geoScope, profilePic, idHash, idCardDocUrl }) => {
+  try {
+    // Sanitize input username to lowercase alphanumeric characters only
+    const cleanUsername = username.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    
+    // Create reference to the target document using the sanitized username as ID
+    const docRef = db.collection("users").doc(cleanUsername);
+    const docSnapshot = await docRef.get();
+    
+    // Enforce uniqueness for the custom document ID to prevent overwriting existing nodes
+    if (docSnapshot.exists) {
+      throw new Error("DUPLICATE_ENTRY: Username identifier already taken");
     }
-    },
+
+    // Execute duplicate screening checks for government ID hash and phone registry vectors
+    const idDuplicateSnapshot = await db.collection("users").where("idHash", "==", idHash).get();
+    if (!idDuplicateSnapshot.empty) {
+      throw new Error("DUPLICATE_ENTRY: Identity credential already registered");
+    }
+
+    const phoneDuplicateSnapshot = await db.collection("users").where("phone", "==", phone).get();
+    if (!phoneDuplicateSnapshot.empty) {
+      throw new Error("DUPLICATE_ENTRY: Mobile registry vector already exists");
+    }
+
+    // Construct the standard schema structure for database persistence
+    const newPlayerData = { 
+      username: cleanUsername,
+      name, 
+      phone, 
+      skill, 
+      role: "PLAYER", 
+      geoScope, 
+      profilePic, 
+      idHash, 
+      idCardDocUrl, 
+      status: "PENDING", 
+      createdAt: new Date().toISOString() 
+    };
+    
+    // Write data payload directly into Firestore using the customized document path string
+    await docRef.set(newPlayerData);
+    
+    return { id: cleanUsername, ...newPlayerData };
+  } catch (error) {
+    console.error("Server Enrollment Exception:", error);
+    throw new Error(error.message || "Failed to persist player node");
+  }
+},
+
 
     createGlobalTeam: async (_, { teamName, logoUrl, ownerId, playerIds, geoScope }) => {
       try {

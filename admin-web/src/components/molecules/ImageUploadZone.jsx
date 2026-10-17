@@ -7,7 +7,7 @@ export const ImageUploadZone = ({
   label, 
   shouldCompress = true, // 🚀 కంప్రెషన్ చేయాలా వద్దా అని డిసైడ్ చేసే స్విచ్ (Default: true)
   compressionConfig = {}, 
-  onFileReady 
+  onFileReady,
 }) => {
   const [previewUrl, setPreviewUrl] = useState('');
   const { compressImage, compressing, error } = useImageCompressor();

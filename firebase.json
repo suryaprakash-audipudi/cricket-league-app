@@ -17,6 +17,37 @@
   "firestore": {
     "rules": "firestore.rules"
   },
+  "rewrites": [
+      {
+        "source": "/api/players/**",
+        "function": "api"
+      },
+      {
+        "source": "/api/teams/**",
+        "function": "api"
+      },
+      {
+        "source": "/api/leagues",
+        "function": "leagueService"
+      },
+      {
+        "source": "/api/leagues/**",
+        "function": "leagueService"
+      },
+      {
+        "source": "/api",
+        "function": "api"
+      },
+      {
+        "source": "/api/**",
+        "function": "api"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+  
   "emulators": {
     "functions": {
       "port": 5005

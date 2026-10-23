@@ -5,10 +5,16 @@ import { Home } from './pages/Home';
 import { Leagues } from './pages/Leagues';
 import { LiveStream } from './components/organisms/LiveStream';
 import { PlayerForm } from './components/organisms/PlayerForm';
-import { TeamForm } from './components/organisms/TeamsForm';
+import { GlobalTeamsForm } from './components/organisms/TeamsForm';
 import { SponsorForm } from './components/organisms/SponsorForm';
 import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { AdminReview } from './pages/AdminReview';
+import { LeagueRegistrationForm } from './components/organisms/LeagueRegistrationForm';
+import { LeagueDisplayDashboard } from './components/organisms/LeagueDisplayDashboard';
+import { LeagueTeamEnrollmentForm } from './components/organisms/LeagueTeamEnrollmentForm'; 
+import { LeagueConsoleDashboard } from './components/organisms/LeagueConsoleDashboard';
+import { LeagueTeamDashboard } from './components/organisms/LeagueTeamDashboard';
+
 import Sidebar from './components/molecules/Sidebar';
 
 function App() {
@@ -33,10 +39,15 @@ function App() {
             <Route path="/leagues" element={<Leagues />} />
             <Route path="/live-stream" element={<LiveStream />} />
             <Route path="/register-player" element={<PlayerForm />} />
-            <Route path="/register-team" element={<TeamForm />} />
+            <Route path="/register-team" element={<GlobalTeamsForm />} />
             <Route path="/admin-ads" element={<SponsorForm />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/admin-review" element={<AdminReview />} />
+            <Route path="/admin/configure-league" element={<LeagueRegistrationForm />} />
+            <Route path="/leagues-hub" element={<LeagueDisplayDashboard />} />
+            <Route path="/leagues-hub/:leagueId" element={<LeagueConsoleDashboard />} />
+            <Route path="/leagues-hub/:leagueId/team/:teamId" element={<LeagueTeamDashboard />} />
+            <Route path="/admin/enroll-team" element={<LeagueTeamEnrollmentForm />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

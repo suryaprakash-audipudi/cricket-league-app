@@ -1,94 +1,97 @@
-// src/components/organisms/TeamForm.jsx
-import React, { useState } from 'react';
-import { gql } from '@apollo/client';
-import { useMutation } from '@apollo/client/react';
+// src/components/organisms/GlobalTeamsForm.jsx
+import React from 'react';
+import { useGlobalTeamRegistration } from '../../hooks/useGlobalTeamRegistration'; // 🚀 Direct connection gateway to our clean hook
+//import { useGeoScopeRegistry } from '../../hooks/useGeoScopeRegistry';
 import { Input } from '../atoms/Input';
 import { GeoZone } from '../molecules/GeoZone';
-import { PlayerSelector } from '../molecules/PlayerSelector'; // ఆటో-కంప్లీట్ మాలిక్యూల్
+import { ImageUploadZone } from '../molecules/ImageUploadZone';
+import { PlayerSelector } from '../molecules/PlayerSelector';
+import { AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
+import { SimpleGeoSelect } from '../atoms/SimpleGeoSelect';
 
-const CREATE_GLOBAL_TEAM = gql`
-    mutation CreateGlobalTeam(
-    $teamName: String!
-    $logoUrl: String!
-    $ownerId: String!
-    $playerIds: [String]!     # అరే ఇన్‌పుట్ వేరియబుల్
-    $geoScope: GeoScopeInput!
-  ) {
-    createGlobalTeam(
-      teamName: $teamName
-      logoUrl: $logoUrl
-      ownerId: $ownerId
-      playerIds: $playerIds
-      geoScope: $geoScope
-    ) {
-      id
-      teamName
-    }
-  }
-`;
-
-export const TeamForm = () => {
-  const [teamName, setTeamName] = useState('');
-  const [logoUrl, setLogoUrl] = useState('');
-  const [ownerId, setOwnerId] = useState('');
-  const [playerIds, setPlayerIds] = useState([]); // ఇక్కడికి ఆటో-కంప్లీట్ ఐడిలు వస్తాయి
-  
-  // GeoScope States
-  const [geoLevel, setGeoLevel] = useState('DISTRICT');
-  const [constituency, setConstituency] = useState('NRT');
-  const [successMsg, setSuccessMsg] = useState('');
-
-  const [createTeam, { loading, error }] = useMutation(CREATE_GLOBAL_TEAM);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSuccessMsg('');
-    try {
-      const res = await createTeam({
-        variables: {
-          teamName,
-          logoUrl,
-          ownerId,
-          playerIds, // ఆటో-కంప్లీట్ లో సెలెక్ట్ అయిన ఐడిల అరే
-          geoScope: {
-            level: geoLevel,
-            country: 'IN',
-            state: 'AP',
-            district: 'GNT',
-            constituency: constituency.toUpperCase()
-          }
-        }
-      });
-      setSuccessMsg(`Franchise Team "${res.data.createGlobalTeam.teamName}" Registered Successfully! 🛡️`);
-      setTeamName('');
-      setLogoUrl('');
-      setOwnerId('');
-    } catch (err) {
-      console.error(err);
-    }
-  };
+export const GlobalTeamsForm = () => {
+  const {
+    teamName, ownerName, ownerPhone, ownerEmail, playerIds, geoLevel, constituency, actionStatus, statusType, loading,
+    setTeamName, setOwnerName, setOwnerPhone, setOwnerEmail, setPlayerIds, setGeoLevel, setConstituency, setLogoFile,
+    handleRegisterTeam
+  } = useGlobalTeamRegistration();
+ // const { geoNodes } = useGeoScopeRegistry('DISTRICT', 'CONSTITUENCY', ['PAL']);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <Input label="Franchise Team Name" required value={teamName} onChange={(e) => setTeamName(e.target.value)} placeholder="e.g. Narasaraopeta Warriors" />
-      <Input label="Team Logo CDN URL" type="url" required value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://example.com" />
-      <Input label="Team Franchise Owner ID" required value={ownerId} onChange={(e) => setOwnerId(e.target.value)} placeholder="Paste Owner User Token/ID" />
-      
-      {/* 🚀 మన పవర్‌ఫుల్ ఆటో-కంప్లీట్ మాలిక్యూల్ ఇక్కడ యాడ్ అయింది */}
-      <PlayerSelector selectedPlayers={playerIds} setSelectedPlayers={setPlayerIds} />
+    <div className="space-y-6 w-full max-w-2xl mx-auto p-4">
+      <div className="border-b border-slate-800 pb-4">
+        <h2 className="text-xl font-black text-white tracking-tight">Onboard a Global Team</h2>
+        <p className="text-xs text-slate-400 mt-1">Establish sovereign profile credentials inside the global token asset network</p>
+      </div>
 
-      <GeoZone geoLevel={geoLevel} setGeoLevel={setGeoLevel} constituency={constituency} setConstituency={setConstituency} />
+      <form onSubmit={handleRegisterTeam} className="space-y-6">
+        <Input 
+          label="Sovereign Team / Club Name" 
+          required 
+          value={teamName} 
+          onChange={(e) => setTeamName(e.target.value)} 
+          placeholder="e.g. Narasaraopeta Super Kings" 
+        />
+        
+        <Input 
+          label="Franchise Owner Full Name" 
+          required 
+          value={ownerName} 
+          onChange={(e) => setOwnerName(e.target.value)} 
+          placeholder="e.g. Siva Prakash" 
+        />
+        
+        <Input 
+          label="Owner Mobile (With Country Code)" 
+          type="tel" 
+          required 
+          value={ownerPhone} 
+          onChange={(e) => setOwnerPhone(e.target.value)} 
+          placeholder="e.g. +919000403288" 
+        />
+        
+        <Input 
+          label="Owner Email Address (Optional)" 
+          type="email" 
+          value={ownerEmail} 
+          onChange={(e) => setOwnerEmail(e.target.value)} 
+          placeholder="e.g. owner@club.com" 
+        />
+        
+        <ImageUploadZone 
+          label="Official Team Logo / Insignia" 
+          onFileReady={(file) => setLogoFile(file)} 
+        />
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-emerald-500 text-slate-950 p-3.5 rounded-xl font-bold text-lg hover:bg-emerald-400 active:scale-[0.99] transition duration-150 shadow-lg shadow-emerald-500/10 disabled:opacity-50"
-      >
-        {loading ? 'Registering Franchise Fleet...' : 'Deploy Team to League'}
-      </button>
+        {/* Global Talent Pool auto-complete selection draft board */}
+        <div className="bg-slate-900/40 p-5 rounded-2xl border border-slate-800 space-y-3">
+          <h4 className="text-sm font-bold text-slate-200 tracking-wide">Draft Base Team Squad (Optional)</h4>
+          <PlayerSelector selectedPlayers={playerIds} setSelectedPlayers={setPlayerIds} />
+        </div>
 
-      {successMsg && <div className="p-4 bg-emerald-950/40 border border-emerald-500/30 rounded-xl text-emerald-400 text-sm text-center font-semibold">{successMsg}</div>}
-      {error && <div className="p-4 bg-red-950/40 border border-red-500/30 rounded-xl text-red-400 text-sm text-center">❌ Team Creation Failed: {error.message}</div>}
-    </form>
+        
+        <SimpleGeoSelect value={constituency} onChange={setConstituency}/>
+
+        <button
+          type="submit"
+          disabled={loading || statusType === 'PENDING'}
+          className="w-full bg-emerald-500 text-slate-950 p-3.5 rounded-xl font-bold text-lg hover:bg-emerald-400 active:scale-[0.99] transition duration-150 shadow-lg shadow-emerald-500/10 disabled:opacity-50"
+        >
+          {loading || statusType === 'PENDING' ? 'Securing Fleet Node...' : 'Register Independent Club'}
+        </button>
+      </form>
+
+      {actionStatus && (
+        <div className={'flex items-center gap-2.5 p-4 border rounded-xl text-sm font-semibold tracking-wide transition duration-150 ' + (
+          statusType === 'SUCCESS' ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-400' :
+          statusType === 'ERROR' ? 'bg-red-950/40 border-red-500/30 text-red-400' : 'bg-slate-900 border-slate-800 text-slate-200'
+        )}>
+          {statusType === 'SUCCESS' && <CheckCircle2 className="w-4 h-4 stroke-[2.5] shrink-0" />}
+          {statusType === 'ERROR' && <XCircle className="w-4 h-4 stroke-[2.5] shrink-0" />}
+          {statusType === 'PENDING' && <div className="w-3.5 h-3.5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin shrink-0" />}
+          <span>{actionStatus}</span>
+        </div>
+      )}
+    </div>
   );
 };
